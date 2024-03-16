@@ -1,0 +1,19 @@
+from __future__ import print_function
+import dicom2nifti 
+import os 
+import torchio as tio
+
+path_out_data = 'C:/Users/user/Desktop/testDicom/NIFTI/' # Output path 
+path_one_patient = 'C:/Users/user/Desktop/testDicom/DICOM/' # The path for only one patient 
+images=os.scandir("C:/Users/user/Desktop/testDicom/DICOM/")
+
+for entry in images :
+    if entry.is_dir() :
+        print(entry.name)
+        dicom2nifti.dicom_series_to_nifti(path_one_patient+entry.name, os.path.join(path_out_data, entry.name+'.nii')) 
+        
+        image = tio.ScalarImage(os.path.join(path_out_data, entry.name+'.nii'))
+        transform = tio.CropOrPad((240, 256, 160))
+        output = transform(image)
+        print(output)
+        output.save(os.path.join(path_out_data, "resized_"+entry.name+'.nii'))
